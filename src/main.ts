@@ -10,6 +10,6 @@ class MainPage extends FASTElement {
 
 MainPage.define({
   name: "main-page",
-  template: html<MainPage>`<gpucanvas render=${main}></gpucanvas>`,
+  template: html<MainPage>`<gpucanvas render=${(x) => x.render}></gpucanvas>`,
   // template: html`<triangle-canvas></triangle-canvas>`,
 });
