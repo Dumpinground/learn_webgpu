@@ -1,6 +1,6 @@
 import wgsl from "./compute.wgsl?raw";
 
-export async function main(canvas: HTMLCanvasElement) {
+export async function main() {
   const adapter = await navigator.gpu.requestAdapter();
   const device = await adapter?.requestDevice();
 
@@ -19,7 +19,7 @@ export async function main(canvas: HTMLCanvasElement) {
     layout: "auto",
     compute: {
       module,
-      entryPoint: "computeSomething",
+      // entryPoint: "computeSomething",
     },
   });
 
@@ -39,7 +39,7 @@ export async function main(canvas: HTMLCanvasElement) {
   const resultBuffer = device.createBuffer({
     label: "result buffer",
     size: input.byteLength,
-    usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.MAP_WRITE,
+    usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
   });
 
   const bindGroup = device.createBindGroup({
@@ -67,10 +67,9 @@ export async function main(canvas: HTMLCanvasElement) {
   device.queue.submit([commandBuffer]);
 
   await resultBuffer.mapAsync(GPUMapMode.READ);
-  const result = new Float32Array(resultBuffer.getMappedRange());
+  const result = new Float32Array(resultBuffer.getMappedRange().slice());
+  resultBuffer.unmap();
 
   console.log("input", input);
   console.log("result", result);
-
-  resultBuffer.unmap();
 }

@@ -1,4 +1,5 @@
 import { attr, FASTElement, html, ref } from "@microsoft/fast-element";
+import styles from "./gpucanvas.css?raw";
 
 class GpuCanvas extends FASTElement {
   @attr
@@ -26,4 +27,5 @@ class GpuCanvas extends FASTElement {
 GpuCanvas.define({
   name: "gpu-canvas",
   template: html<GpuCanvas>`<canvas ${ref("canvas")}></canvas>`,
+  styles,
 });
