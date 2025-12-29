@@ -1,24 +1,24 @@
-import {
-  attr,
-  FASTElement,
-  html,
-  observable,
-  ref,
-} from "@microsoft/fast-element";
+import { attr, FASTElement, html, ref } from "@microsoft/fast-element";
 
 class GpuCanvas extends FASTElement {
   @attr
-  gpu_render?: (canvas: HTMLCanvasElement) => Promise<void>;
+  render?: (canvas: HTMLCanvasElement) => Promise<void>;
 
   canvas?: HTMLCanvasElement;
 
   connectedCallback() {
     super.connectedCallback();
 
-    if (this.canvas !== undefined && this.gpu_render !== undefined) {
-      this.gpu_render(this.canvas);
+    if (this.canvas !== undefined && this.render !== undefined) {
+      this.render(this.canvas);
     } else {
-      console.log("canvas: ", this.canvas, "\nrender: ", this.gpu_render);
+      console.log(
+        "render init for canvas failed:\n",
+        "canvas: ",
+        this.canvas,
+        "\nrender: ",
+        this.render,
+      );
     }
   }
 }
