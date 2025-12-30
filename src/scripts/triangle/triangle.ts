@@ -1,4 +1,4 @@
-import wgsl from "./triangle.wgsl?raw";
+import wgsl from "./checkerboard_triangle.wgsl?raw";
 
 export async function main(canvas: HTMLCanvasElement) {
   const adapter = await navigator.gpu?.requestAdapter();
