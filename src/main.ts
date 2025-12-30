@@ -4,6 +4,7 @@ import "./components/triangle/triangle";
 import "./components/gpucanvas/gpucanvas";
 import { main as triangle } from "./scripts/triangle/triangle";
 import { main as compute } from "./scripts/compute/compute";
+import { start } from "./scripts/checkGpu";
 
 class MainPage extends FASTElement {}
 
@@ -14,4 +15,5 @@ MainPage.define({
   ></gpu-canvas>`,
 });
 
-await compute();
+// await compute();
+await start();
