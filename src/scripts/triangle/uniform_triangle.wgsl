@@ -15,3 +15,7 @@ struct OurStruct {
 
     return vec4f(pos[vertexIndex] * ourStruct.scale + ourStruct.offset, 0., 1.);
 }
+
+@fragment fn fs() -> @location(0) vec4f {
+    return ourStruct.color;
+}
