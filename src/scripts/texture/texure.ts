@@ -1,3 +1,4 @@
+import GUI from 'muigui'
 import wgsl from './texture.wgsl?raw'
 
 export async function main(canvas: HTMLCanvasElement) {
@@ -67,15 +68,33 @@ export async function main(canvas: HTMLCanvasElement) {
     { width: kTextureWidth, height: kTexureHeight },
   )
 
-  const sampler = device.createSampler()
+  const bindGroups: GPUBindGroup[] = []
 
-  const bindGroup = device.createBindGroup({
-    layout: pipeline.getBindGroupLayout(0),
-    entries: [
-      { binding: 0, resource: sampler },
-      { binding: 1, resource: texture.createView() },
-    ],
-  })
+  for (let i = 0; i < 8; ++i) {
+    const sampler = device.createSampler({
+      addressModeU: i & 1 ? 'repeat' : 'clamp-to-edge',
+      addressModeV: i & 2 ? 'repeat' : 'clamp-to-edge',
+      magFilter: i & 4 ? 'linear' : 'nearest',
+    })
+
+    const bindGroup = device.createBindGroup({
+      layout: pipeline.getBindGroupLayout(0),
+      entries: [
+        { binding: 0, resource: sampler },
+        { binding: 1, resource: texture.createView() },
+      ],
+    })
+
+    bindGroups.push(bindGroup)
+  }
+
+  // const bindGroup = device.createBindGroup({
+  //   layout: pipeline.getBindGroupLayout(0),
+  //   entries: [
+  //     { binding: 0, resource: sampler },
+  //     { binding: 1, resource: texture.createView() },
+  //   ],
+  // })
 
   const renderPassDescriptor: GPURenderPassDescriptor = {
     label: 'our basic canvas renderPass',
@@ -89,7 +108,28 @@ export async function main(canvas: HTMLCanvasElement) {
     ],
   }
 
+  const settings: GPUSamplerDescriptor = {
+    addressModeU: 'repeat',
+    addressModeV: 'repeat',
+    magFilter: 'linear',
+  }
+
+  const addressOptions = ['repeat', 'clamp-to-edge']
+  const filterOptions = ['nearest', 'linear']
+
+  const gui = new GUI()
+  Object.assign(gui.domElement.style, { right: '', left: '15px' })
+  gui.add(settings, 'addressModeU', addressOptions).onChange(render)
+  gui.add(settings, 'addressModeV', addressOptions).onChange(render)
+  gui.add(settings, 'magFilter', filterOptions).onChange(render)
+
   function render() {
+    const ndx =
+      (settings.addressModeU === 'repeat' ? 1 : 0) +
+      (settings.addressModeV === 'repeat' ? 2 : 0) +
+      (settings.magFilter === 'linear' ? 4 : 0)
+    const bindGroup = bindGroups[ndx]
+
     for (let attachment of renderPassDescriptor.colorAttachments) {
       if (!attachment) return
       attachment.view = context!.getCurrentTexture().createView()

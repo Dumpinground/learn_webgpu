@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@microsoft/fast-element": "^2.9.1"
+    "@microsoft/fast-element": "^2.9.1",
+    "muigui": "^0.0.27"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
