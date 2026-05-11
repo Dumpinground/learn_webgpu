@@ -3,13 +3,13 @@ struct OurVertexShaderOutput {
 };
 
 @vertex fn vs(
-    @builtin(vertex_index) vertexIndex : u32
+    @builtin(vertex_index) vertexIndex: u32
 ) -> OurVertexShaderOutput {
-let pos = array(
-    vec2f( 0.0,  0.5),  // top center
-    vec2f(-0.5, -0.5),  // bottom left
-    vec2f( 0.5, -0.5)   // bottom right
-);
+    let pos = array(
+        vec2f( 0.0,  0.5),  // top center
+        vec2f(-0.5, -0.5),  // bottom left
+        vec2f( 0.5, -0.5)   // bottom right
+    );
 
     var vsOutput: OurVertexShaderOutput;
     vsOutput.position = vec4f(pos[vertexIndex], 0., 1.);

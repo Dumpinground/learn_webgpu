@@ -1,4 +1,4 @@
-import wgsl from './uniform_triangle.wgsl?raw'
+import wgsl from './storage_triangle.wgsl?raw'
 
 function rand(min?: number, max?: number) {
   if (!min) {
@@ -40,17 +40,14 @@ export async function main(canvas: HTMLCanvasElement) {
     },
   })
 
-  const uniformBufferSize = 4 * 4 + 2 * 4 + 2 * 4
-  // const uniformBuffer = device.createBuffer({
-  //   size: uniformBufferSize,
-  //   usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-  // });
-
-  // const uniformValues = new Float32Array(uniformBufferSize / 4);
+  // const uniformBufferSize = 4 * 4 + 2 * 4 + 2 * 4
+  const staticUniformBufferSize = 4 * 4 + 2 * 4 + 2 * 4
+  const uniformBufferSize = 2 * 4
 
   const kColorOffset = 0
-  const kScaleOffset = 4
-  const kOffsetOffset = 6
+  const kOffsetOffset = 4
+
+  const kScaleOffset = 0
 
   const kNumObjects = 100
   const objectInfos: {
@@ -61,22 +58,33 @@ export async function main(canvas: HTMLCanvasElement) {
   }[] = []
 
   for (let i = 0; i < kNumObjects; ++i) {
+    const staticUniformBuffer = device.createBuffer({
+      label: `static uniforms for obj: ${i}`,
+      size: staticUniformBufferSize,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    })
+
+    {
+      const uniformValues = new Float32Array(staticUniformBufferSize / 4)
+      uniformValues.set([rand(), rand(), rand(), 1], kColorOffset)
+      uniformValues.set([rand(-0.9, 0.9), rand(-0.9, 0.9)], kOffsetOffset)
+      device.queue.writeBuffer(staticUniformBuffer, 0, uniformValues)
+    }
+
+    const uniformValues = new Float32Array(uniformBufferSize / 4)
     const uniformBuffer = device.createBuffer({
-      label: `uniforms for obj: ${i}`,
+      label: `changing uniforms for obj: ${i}`,
       size: uniformBufferSize,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     })
 
-    const uniformValues = new Float32Array(uniformBufferSize / 4)
-    // uniformValues.set([0, 1, 0, 1], kColorOffset);
-    // uniformValues.set([-0.5, -0.25], kOffsetOffset);
-    uniformValues.set([rand(), rand(), rand(), 1], kColorOffset)
-    uniformValues.set([rand(-0.9, 0.9), rand(-0.9, 0.9)], kOffsetOffset)
-
     const bindGroup = device.createBindGroup({
       label: `bind group for obj: ${i}`,
       layout: pipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: uniformBuffer }],
+      entries: [
+        { binding: 0, resource: staticUniformBuffer },
+        { binding: 1, resource: uniformBuffer },
+      ],
     })
 
     objectInfos.push({
