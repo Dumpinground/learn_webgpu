@@ -1,6 +1,5 @@
 struct OurStruct {
     color: vec4f,
-    scale: vec2f,
     offset: vec2f,
 };
 
@@ -8,19 +7,32 @@ struct OtherStruct {
     scale: vec2f,
 }
 
-@group(0) @binding(0) var<uniform> ourStruct: OurStruct;
-@group(0) @binding(1) var<uniform> otherStruct: OtherStruct;
-
-@vertex fn vs(@builtin(vertex_index) vertexIndex: u32) -> @builtin(position) vec4f {
-    let pos = array(
-        vec2f(0., 0.5), // top center
-        vec2f(-0.5, -0.5), // bottom left
-        vec2f(0.5, -0.5)// bottom right
-    );
-
-    return vec4f(pos[vertexIndex] * otherStruct.scale + ourStruct.offset, 0., 1.);
+struct Vertex {
+    position: vec2f
 }
 
-@fragment fn fs() -> @location(0) vec4f {
-    return ourStruct.color;
+struct VSOutput {
+    @builtin(position) position: vec4f,
+    @location(0) color: vec4f,
+}
+
+@group(0) @binding(0) var<storage, read> ourStructs: array<OurStruct>;
+@group(0) @binding(1) var<storage, read> otherStructs: array<OtherStruct>;
+@group(0) @binding(2) var<storage, read> pos: array<Vertex>;
+
+@vertex fn vs(
+    @builtin(vertex_index) vertexIndex: u32,
+    @builtin(instance_index) instanceIndex: u32
+) -> VSOutput {
+    let otherStruct = otherStructs[instanceIndex];
+    let ourStruct = ourStructs[instanceIndex];
+
+    var vsOut: VSOutput;
+    vsOut.position = vec4f(pos[vertexIndex].position * otherStruct.scale + ourStruct.offset, 0, 1);
+    vsOut.color = ourStruct.color;
+    return vsOut;
+}
+
+@fragment fn fs(vsOut: VSOutput) -> @location(0) vec4f {
+    return vsOut.color;
 }
