@@ -1,4 +1,4 @@
-import wgsl from './storage_triangle.wgsl?raw'
+import wgsl from './storage_buffer.wgsl?raw'
 
 function rand(min?: number, max?: number) {
   if (!min) {
@@ -35,10 +35,12 @@ function createCircleVertices({
   // |/ / |
   // 2 3--5
   for (let i = 0; i < numSubdivisions; ++i) {
+    // prettier-ignore
     const angle1 =
-      startAngle + ((i + 0) * (endAngle - startAngle)) / numSubdivisions
+      startAngle + (i + 0) * (endAngle - startAngle) / numSubdivisions
+    // prettier-ignore
     const angle2 =
-      startAngle + ((i + 1) * (endAngle - startAngle)) / numSubdivisions
+      startAngle + (i + 1) * (endAngle - startAngle) / numSubdivisions
 
     const c1 = Math.cos(angle1)
     const s1 = Math.sin(angle1)
@@ -199,7 +201,7 @@ export async function main(canvas: HTMLCanvasElement) {
     device.queue.writeBuffer(changingStorageBuffer, 0, storageValues)
 
     pass.setBindGroup(0, bindGroup)
-    pass.draw(3, kNumObjects)
+    pass.draw(numVertices, kNumObjects)
 
     pass.end()
 
