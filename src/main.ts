@@ -5,6 +5,8 @@ import './components/gpucanvas/gpucanvas'
 import { main as triangle } from './scripts/triangle/triangle'
 import { main as uniform_triangle } from './scripts/triangle/uniform_triangle'
 import { main as storage_buffer } from './scripts/triangle/storage_buffer'
+import { main as vertex_buffer } from './scripts/triangle/vertex_buffer'
+import { main as index_buffer } from './scripts/triangle/index_buffer'
 import { main as texture } from './scripts/texture/texure'
 import { main as compute } from './scripts/compute/compute'
 import { start } from './scripts/checkGpu'
@@ -17,6 +19,8 @@ MainPage.define({
     <gpu-canvas :render=${_ => triangle}></gpu-canvas>
     <gpu-canvas :render=${_ => uniform_triangle}></gpu-canvas>
     <gpu-canvas :render=${_ => storage_buffer}></gpu-canvas>
+    <gpu-canvas :render=${_ => vertex_buffer}></gpu-canvas>
+    <gpu-canvas :render=${_ => index_buffer}></gpu-canvas>
     <gpu-canvas :render=${_ => texture}></gpu-canvas>
   `,
 })
